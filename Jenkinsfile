@@ -18,7 +18,6 @@ pipeline {
 
         stage('Load secrets from Vault') {
             steps {
-               jenkinsfile from vault
                 withVault([
                     vaultSecrets: [[
                         path: 'secret/yara_app',
@@ -30,7 +29,7 @@ pipeline {
                         ]
                     ]]
                 ]) {
-                    sh 'echo "Secrets successfully loaded from Vault"'
+                    echo 'Secrets successfully loaded from Vault'
                 }
             }
         }
@@ -50,11 +49,11 @@ pipeline {
             steps {
                 sshagent(credentials: ['ssh-yara_app']) {
                     sh """
-                    ssh ${REMOTE_USER}@${REMOTE_HOST} << 'EOF'
-                    export WORDPRESS_DB_HOST='${WORDPRESS_DB_HOST}'
-                    export WORDPRESS_DB_USER='${WORDPRESS_DB_USER}'
-                    export WORDPRESS_DB_PASSWORD='${WORDPRESS_DB_PASSWORD}'
-                    export WORDPRESS_DB_NAME='${WORDPRESS_DB_NAME}'
+                    ssh ${REMOTE_USER}@${REMOTE_HOST} << EOF
+                    export WORDPRESS_DB_HOST="${WORDPRESS_DB_HOST}"
+                    export WORDPRESS_DB_USER="${WORDPRESS_DB_USER}"
+                    export WORDPRESS_DB_PASSWORD="${WORDPRESS_DB_PASSWORD}"
+                    export WORDPRESS_DB_NAME="${WORDPRESS_DB_NAME}"
 
                     cd ${REMOTE_APP_DIR}
                     docker compose down || true
